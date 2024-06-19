@@ -7,6 +7,35 @@
   pointer-events: none;
 }
 
+.fc{
+  width: 90%;
+  margin: auto;
+}
+
+.fc .fc-header-toolbar h2{
+  font-size: small; 
+}
+
+.fc .fc-header-toolbar .fc-today-button {
+background-color: white;
+border: 1px solid #e6c068;
+border-radius: 5px;
+color: #e6c068;
+}
+
+.fc .fc-header-toolbar .fc-button-group .fc-button {
+  background-color: black;
+}
+
+.fc .fc-button:disabled{
+  opacity: 1;
+}
+
+h1{
+  font-family: cursive;
+  color:#e6c068;
+  margin-left: 10rem;
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
