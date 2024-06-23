@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
+import './LoginModal.css';
 
 const customStyles = {
   content: {
@@ -20,6 +21,7 @@ const customStyles = {
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    zIndex: 1
   },
 };
 
@@ -41,9 +43,9 @@ const LoginModal = ({ isOpen, onRequestClose }) => {
           <label htmlFor="password" style={{ marginRight: '10px' }}>Mot de passe:</label>
           <input type="password" id="password" name="password" required />
         </div>
-        <button type="submit" style={{ marginBottom: '10px' }}>Se connecter</button>
+        <button className="log-button" type="submit" style={{ marginBottom: '10px' }}>Se connecter</button>
       </form>
-      <button onClick={onRequestClose}>Fermer</button>
+      <button className="close-button" onClick={onRequestClose}>Fermer</button>
     </Modal>
   );
 };
