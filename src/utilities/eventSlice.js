@@ -1,5 +1,5 @@
 
-import { createSlice, createAsyncThunk, configureStore } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { formatDateToSql } from "./fonctions";
 const initialState = {
@@ -12,25 +12,9 @@ const initialState = {
   error: null, // Add error state for handling fetching issues
 };
 
-export const fetchEvents = createAsyncThunk(
-  'events/fetchEvents',
-  async (currentPage, thunkAPI) => {
-    const {  dispatch } = thunkAPI;
 
-      const url = `http://localhost:8000/api/event?page=${currentPage}`; 
-      const response = await fetch(url);
-      const data = await response.json();
-      const events = data.map((e) => ({
-        title: e.name,
-        date: formatDateToSql(new Date(e.startDate)),
-      }));
-      
-      dispatch(setPageSize(events.length));
-      return events; 
-    }
-  );
 
-  const eventsSlice = createSlice({
+  const eventSlice = createSlice({
     name: 'events',
     initialState,
     reducers: {
@@ -72,14 +56,23 @@ export const fetchEvents = createAsyncThunk(
         });
     },
   });
+const {setPageSize} = eventSlice.actions;
+export const fetchEvents = createAsyncThunk(
+  'events/fetchEvents',
+  async (currentPage, thunkAPI) => {
+    const {  dispatch } = thunkAPI;
 
-export const { addEvent, deleteEvent, likeEvent, setPageSize, setCurrentPage, setEventsPropertyOnMine} = eventsSlice.actions;
+      const url = `http://localhost:8000/api/event?page=${currentPage}`; 
+      const response = await fetch(url);
+      const data = await response.json();
+      const events = data.map((e) => ({
+        title: e.name,
+        date: formatDateToSql(new Date(e.startDate)),
+      }));
+      
+      dispatch(setPageSize(events.length));
+      return events; 
+    }
+  );
 
-
-const store = configureStore({
-  reducer: {
-    events: eventsSlice.reducer,
-  },
-});
-
-export default store;
+export default eventSlice;

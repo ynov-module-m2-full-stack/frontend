@@ -4,7 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { useDispatch, useSelector } from 'react-redux'
 import "./checkbox.css";
 import interactionPlugin from "@fullcalendar/interaction";
-import  { addEvent, deleteEvent, likeEvent, setPageSize, setCurrentPage, setEventsPropertyOnMine, fetchEvents}  from '../utilities/fetchRedux';
+import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../utilities/store';
 import Sidebar from './molecules/Sidebar';
 const MyCalendar = () => {
   const events = useSelector((state) => state.events.events);
@@ -14,6 +14,7 @@ const MyCalendar = () => {
   const error = useSelector((state) => state.events.error);
   const maxPageSize = useSelector((state) => state.events.maxPageSize);
   const showMyEvents = useSelector((state) => state.events.showMyEvents);
+  
   const dispatch = useDispatch();
   const handlePageChange = (newPage) => {
       if (currentPage > 1 && pageSize > maxPageSize) {
@@ -29,7 +30,7 @@ const MyCalendar = () => {
     }, [showMyEvents]);
   useEffect(() => {
     handlePageChange(1);
-  }, [showMyEvents]);
+  });
 
   useEffect(() => {
     dispatch(fetchEvents(currentPage)); // Fetch events on component mount

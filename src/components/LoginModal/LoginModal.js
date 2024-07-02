@@ -1,7 +1,9 @@
 import React from 'react';
 import Modal from 'react-modal';
 import './LoginModal.css';
-
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../../utilities/userSlice';
 const customStyles = {
   content: {
     top: '50%',
@@ -26,6 +28,21 @@ const customStyles = {
 };
 
 const LoginModal = ({ isOpen, onRequestClose }) => {
+
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await dispatch(loginUser({ email, password }));
+      onRequestClose();
+    } catch (error) {
+      console.error('Login error:', error);
+    }
+  };
   return (
     <Modal
       isOpen={isOpen}
@@ -37,13 +54,15 @@ const LoginModal = ({ isOpen, onRequestClose }) => {
       <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ marginBottom: '10px' }}>
           <label htmlFor="email" style={{ marginRight: '10px' }}>Email:</label>
-          <input type="email" id="email" name="email" required />
+          <input type="email" id="email" name="email" value={email} required 
+          onChange={(e)=>setEmail(e.target.value)}/>
         </div>
         <div style={{ marginBottom: '10px' }}>
           <label htmlFor="password" style={{ marginRight: '10px' }}>Mot de passe:</label>
-          <input type="password" id="password" name="password" required />
+          <input type="password" id="password" name="password" value={password} required 
+          onChange={(e)=>setPassword  (e.target.value)}/>
         </div>
-        <button className="log-button" type="submit" style={{ marginBottom: '10px' }}>Se connecter</button>
+        <button className="log-button" type="button" onClick={handleSubmit} style={{ marginBottom: '10px' }}>Se connecter</button>
       </form>
       <button className="close-button" onClick={onRequestClose}>Fermer</button>
     </Modal>

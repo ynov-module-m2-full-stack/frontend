@@ -13,8 +13,8 @@ export default function Sidebar({ currentEvents }) {
       <div className="app-sidebar-section">
         <h2>Evènements du jour ({currentEvents.length})</h2>
         <ul>
-          {currentEvents.map((event) => (
-            <SidebarEvent key={event.id + "main"} event={event} />
+          {currentEvents.map((event, i) => (
+            <SidebarEvent key={i + "main"} event={event} />
           ))}
         </ul>
       </div>

@@ -1,5 +1,8 @@
 import React from 'react';
 import Modal from 'react-modal';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../../utilities/userSlice';
 
 const customStyles = {
   content: {
@@ -25,6 +28,20 @@ const customStyles = {
 };
 
 const InscriptionModal = ({ isOpen, onRequestClose }) => {
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await dispatch(addUser({ email, password }));
+      onRequestClose();
+    } catch (error) {
+      console.error('Login error:', error);
+    }
+  };
   return (
     <Modal
       isOpen={isOpen}
@@ -35,16 +52,14 @@ const InscriptionModal = ({ isOpen, onRequestClose }) => {
       <h2>Inscription</h2>
       <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="pseudo" style={{ marginRight: '10px' }}>Pseudo:</label>
-          <input type="text" id="pseudo" name="pseudo" required />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
           <label htmlFor="email" style={{ marginRight: '10px' }}>Email:</label>
-          <input type="email" id="email" name="email" required />
+          <input type="email" id="email" name="email" value={email} required 
+          onChange={(e)=>setEmail(e.target.value)} />
         </div>
         <div style={{ marginBottom: '10px' }}>
           <label htmlFor="password" style={{ marginRight: '10px' }}>Mot de passe:</label>
-          <input type="password" id="password" name="password" required />
+          <input type="password" id="password" name="password" value={password} required 
+          onChange={(e)=>setPassword  (e.target.value)} />
         </div>
         <button className="log-button" type="submit" style={{ marginBottom: '10px' }}>S'inscrire</button>
       </form>
