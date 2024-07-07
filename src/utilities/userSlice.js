@@ -79,7 +79,7 @@ export const loginUser = createAsyncThunk(
     dispatch(loginRequest());
 
     try {
-      const response = await fetch('http://localhost:8000/api/login_check', {
+      const response = await fetch(process.env.REACT_APP_API_URL + '/api/login_check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
@@ -105,7 +105,7 @@ export const addUser = createAsyncThunk(
     dispatch(loginRequest());
 
     try {
-      const response = await fetch('http://localhost:8000/api/users', {
+      const response = await fetch(process.env.REACT_APP_API_URL + '/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
@@ -128,7 +128,7 @@ export const addUser = createAsyncThunk(
 export const logoutUser = createAsyncThunk(
   'user/logout',
   async () => {
-    const response = await fetch('http://localhost:8000/api/logout');
+    const response = await fetch(process.env.REACT_APP_API_URL + '/api/logout');
 
     if (!response.ok) {
       console.error('Logout failed'); // Handle non-critical errors gracefully
@@ -141,7 +141,7 @@ export const logoutUser = createAsyncThunk(
 export const refreshAccessToken = createAsyncThunk(
   'user/refreshAccessToken',
   async (refreshToken, { getState, dispatch }) => {
-    const response = await fetch('http://localhost:8000/api/token/refresh', {
+    const response = await fetch(process.env.REACT_APP_API_URL + '/api/token/refresh', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),

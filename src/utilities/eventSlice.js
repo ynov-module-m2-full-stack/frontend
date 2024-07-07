@@ -62,7 +62,7 @@ export const fetchEvents = createAsyncThunk(
   async (currentPage, thunkAPI) => {
     const {  dispatch } = thunkAPI;
 
-      const url = `http://localhost:8000/api/event?page=${currentPage}`; 
+      const url = `${process.env.REACT_APP_API_URL}/api/events?page=${currentPage}`; 
       const response = await fetch(url);
       const data = await response.json();
       const events = data.map((e) => ({

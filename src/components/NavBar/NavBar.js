@@ -46,9 +46,9 @@ useEffect(()=>{}, [isLoggedIn]);
               <div className="log">
                 <button className="log1" onClick={openLoginModal}>Connexion</button>
                 <LoginModal isOpen={loginModalIsOpen} onRequestClose={closeLoginModal} />
-                {/* 
+                
                 <button className="log2" onClick={openInscriptionModal}>Inscription</button>
-                <InscriptionModal isOpen={inscriptionModalIsOpen} onRequestClose={closeInscriptionModal} /> */}
+                <InscriptionModal isOpen={inscriptionModalIsOpen} onRequestClose={closeInscriptionModal} />
               </div>
           }
    
