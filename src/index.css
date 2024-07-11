@@ -5,9 +5,24 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* src/index.css */
+:root {
+  --background-color: white;
+  --text-color: black;
+  --sidebar-text-color: black; /* Default sidebar text color */
+}
+
+[data-theme='dark'] {
+  --background-color: black;
+  --text-color: white;
+  --sidebar-text-color: black; /* Default sidebar text color */
 }

@@ -45,6 +45,16 @@ b {
   padding: 2em;
 }
 
+.theme-btn {
+  float: right !important;
+  float: right !important;
+  height: 2rem;
+  margin-top: 5px;
+  background-color: black;
+  color: white;
+  border-radius: 10px;
+}
+
 .app-main {
   flex-grow: 1;
   padding: 3em;
