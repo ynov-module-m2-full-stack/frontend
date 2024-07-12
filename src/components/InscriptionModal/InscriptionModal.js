@@ -2,8 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../utilities/userSlice';
-import { addUser } from '../../utilities/userSlice';
+import { loginUser, addUser } from '../../utilities/store';
 const customStyles = {
   content: {
     top: '50%',

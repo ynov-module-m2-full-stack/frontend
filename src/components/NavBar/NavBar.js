@@ -3,16 +3,17 @@ import LoginModal from '../LoginModal/LoginModal.js';
 import InscriptionModal from '../InscriptionModal/InscriptionModal.js';
 import './NavBar.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { logOutUser } from '../../utilities/userSlice.js';
+import { logout } from '../../utilities/store.js';
 const NavBar = () => {
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
   const [inscriptionModalIsOpen, setInscriptionModalIsOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { isLoggedIn, error, loading } = useSelector(state => state.user);
+  const { isLoggedIn} = useSelector(state => state.rootReducer.user);
   const deconnexion = function (e){
-    // dispatch(store.persist.purge());logOutUser
-    dispatch(logOutUser());
+    // dispatch(store.persist.purge());logout
+    dispatch(logout());
+    // console.log(logout)
   }  ;
   const openLoginModal = () => {
     setLoginModalIsOpen(true);

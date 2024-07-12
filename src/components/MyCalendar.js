@@ -7,13 +7,15 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../utilities/store';
 import Sidebar from './molecules/Sidebar';
 const MyCalendar = () => {
-  const events = useSelector((state) => state.events.events);
-  const currentPage = useSelector((state) => state.events.currentPage);
-  const pageSize = useSelector((state) => state.events.pageSize);
-  const loading = useSelector((state) => state.events.loading);
-  const error = useSelector((state) => state.events.error);
-  const maxPageSize = useSelector((state) => state.events.maxPageSize);
-  const showMyEvents = useSelector((state) => state.events.showMyEvents);
+  const events = useSelector((state) => state.rootReducer.events.events);
+  const currentPage = useSelector((state) => state.rootReducer.events.currentPage);
+  const pageSize = useSelector((state) => state.rootReducer.events.pageSize);
+  const loading = useSelector((state) => state.rootReducer.events.loading);
+  const error = useSelector((state) => state.rootReducer.events.error);
+  const maxPageSize = useSelector((state) => state.rootReducer.events.maxPageSize);
+  const showMyEvents = useSelector((state) => state.rootReducer.events.showMyEvents);
+  
+  const accessToken = useSelector((state) => state.rootReducer.user.accessToken);
   
   const dispatch = useDispatch();
   const handlePageChange = (newPage) => {
@@ -26,15 +28,17 @@ const MyCalendar = () => {
   const handleCheckboxChange = (event) => {
     dispatch(setEventsPropertyOnMine(event.target.checked));
   };
+  
   useEffect(() => {
-    }, [showMyEvents]);
-  useEffect(() => {
+    
     handlePageChange(1);
-  });
+    dispatch(fetchEvents());
+    
+  }, [accessToken]);
 
-  useEffect(() => {
-    dispatch(fetchEvents(currentPage)); // Fetch events on component mount
-  }, [dispatch, currentPage]); // Re-fetch on page change
+  // useEffect(() => {
+  //   dispatch(fetchEvents()); // Fetch events on component mount
+  // }, [isLoggedIn]); // Re-fetch on page change
   function handleEventRemove(events) {
     console.log(events)
   }

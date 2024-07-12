@@ -1,7 +1,9 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
+import { refreshAccessToken } from './store';
+import axios from 'axios';
 import { formatDateToSql } from "./fonctions";
+
 const initialState = {
   events: [],
   showMyEvents : false,
@@ -48,7 +50,11 @@ const initialState = {
         })
         .addCase(fetchEvents.fulfilled, (state, action) => {
           state.loading = false;
-          state.events = action.payload;
+          console.log("Events payload : " + action.payload)
+          
+          
+          setPageSize(state.events.length);
+          state.events = (typeof(action.payload) !== 'undefined') ? action.payload: [];;
         })
         .addCase(fetchEvents.rejected, (state, action) => {
           state.loading = false;
@@ -59,20 +65,46 @@ const initialState = {
 const {setPageSize} = eventSlice.actions;
 export const fetchEvents = createAsyncThunk(
   'events/fetchEvents',
-  async (currentPage, thunkAPI) => {
-    const {  dispatch } = thunkAPI;
+  async (test, { getState, dispatch }) => {
+    
+    dispatch(refreshAccessToken());
+    const state = getState();
 
-      const url = `${process.env.REACT_APP_API_URL}/api/events?page=${currentPage}`; 
-      const response = await fetch(url);
-      const data = await response.json();
-      const events = data.map((e) => ({
-        title: e.name,
-        date: formatDateToSql(new Date(e.startDate)),
+    // Extract user data from state
+    const { accessToken } = state.rootReducer.user;
+    const currentPage = state.rootReducer.events.currentPage;
+
+
+    // Configure the request
+    let config = {
+      method: 'GET',
+      url: `${process.env.REACT_APP_API_URL}/api/events?page=${currentPage}`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    };
+
+    // Axios request interceptor for token refresh
+    
+
+    // Make the request with Axios
+    const response = await axios.request(config);
+
+    // Handle response data
+    const data = response.data;
+    console.log(data);
+
+    if (typeof data.code !== 'undefined') {
+      alert(data.message);
+    } else {
+      const events = data.map((event) => ({
+        title: event.name,
+        date: formatDateToSql(new Date(event.startDate)),
       }));
-      
-      dispatch(setPageSize(events.length));
-      return events; 
+      return events;
     }
-  );
+  }
+);
 
 export default eventSlice;

@@ -1,8 +1,8 @@
 import eventSlice from './eventSlice';
 import {configureStore } from '@reduxjs/toolkit';
-import  userSlice, {userSlice_init} from './userSlice';
+import { combineReducers } from '@reduxjs/toolkit';
+import  userSlice, { logout, loginUser, addUser, refreshAccessToken } from './userSlice';
 import { fetchEvents } from './eventSlice';
-import { createStore } from "redux";
 import { persistStore, 
   FLUSH,
   REHYDRATE,
@@ -11,15 +11,20 @@ import { persistStore,
   PURGE,
   REGISTER,
 } from 'redux-persist';
-
 export const{ addEvent, deleteEvent, likeEvent, setPageSize, setCurrentPage, setEventsPropertyOnMine} = eventSlice.actions;
 export {fetchEvents}
 
+export { logout, loginUser, addUser, refreshAccessToken};
+// console.log(userSlice)
 // const store_init = createStore(userSlice);
+export const rootReducer = combineReducers({
+  events: eventSlice.reducer, 
+    user: userSlice
+});
+
 const store = configureStore({
   reducer: {
-    events: eventSlice.reducer, 
-    user: userSlice
+    rootReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
