@@ -1,9 +1,15 @@
-import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import cypher from './cypher';
 import { PURGE } from "redux-persist";
 
+import axios from 'axios';
+
+// Function to calculate access token expiration (replace with your logic)
+function calculateAccessTokenExpiration(expirationInMs) {
+  return parseInt( Date.now()) + parseInt( process.env.REACT_APP_expirationInMs);
+  
+}
 const initialState = {
   isLoggedIn: false,
   userData: null,
@@ -13,9 +19,6 @@ const initialState = {
   refreshToken: null,
   accessTokenExpiration: null,
 };
-const userAdapter = createEntityAdapter({
-  removeAll: (a) => a = initialState,
-});
 const userSlice_init = createSlice({
   name: 'user',
   initialState,
@@ -23,14 +26,18 @@ const userSlice_init = createSlice({
     loginRequest(state) {
       state.loading = true;
       state.error = null; // Clear any previous errors
+      
     },
     loginSuccess(state, action) {
+      // console.log("state : ");
+      // console.log(state);
+      // console.log("action : ");
+      // console.log(action);
       state.loading = false;
       state.isLoggedIn = true;
-      state.userData = action.payload.user;
-      state.accessToken = action.payload.accessToken;
+      state.accessToken = action.payload.token;
       state.refreshToken = action.payload.refreshToken;
-      state.accessTokenExpiration = calculateAccessTokenExpiration(action.payload.accessTokenExpirationInMs);
+      state.accessTokenExpiration = calculateAccessTokenExpiration();
     },
     loginFailure(state, action) {
       state.loading = false;
@@ -51,111 +58,102 @@ const userSlice_init = createSlice({
   }
 });
 
-export const { loginRequest, loginSuccess, loginFailure, logout } = userSlice_init.actions;
 
+const { loginRequest, loginSuccess, loginFailure, logout, refreshAccessTokenTest } = userSlice_init.actions;
 const persistConfig = {
   key: 'root',
   storage
 }
 
-const userSlice = persistReducer(persistConfig, userSlice_init.reducer)
 
-export const logOutUser = createAsyncThunk(
-  'user/logout',
-  async (credentials, { getState, dispatch }) => {
-    dispatch(logout());
-  }
-);
-
-export default userSlice;
-export {userSlice_init};
-// Function to calculate access token expiration (replace with your logic)
-function calculateAccessTokenExpiration(expirationInMs) {
-  return Date.now() + expirationInMs;
-}
 export const loginUser = createAsyncThunk(
   'user/login',
-  async (credentials, { getState, dispatch }) => {
+  async (credentials, { getState, dispatch }, thunkAPI) => {
+    
     dispatch(loginRequest());
-
-    try {
-      const response = await fetch(process.env.REACT_APP_API_URL + '/api/login_check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: process.env.REACT_APP_API_URL + '/api/login_check',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      data : JSON.stringify(credentials)
+    };
+    await axios.request(config)
+    .then((response) => {
+      const data = response.data;
+      if (typeof(data.code) != 'undefined') {
+        alert(data.message);
+        dispatch(loginFailure());
+      }else{
+        // console.log("data : "+data)
+        dispatch(loginSuccess(data));
+        // Return user data
       }
+    })
+    .catch((error) => {
+      console.log(error);
+      dispatch(loginFailure());
+    });
 
-      const data = await response.json();
-      dispatch(loginSuccess(data));
-      return data.user; // Return user data
-    } catch (error) {
-      dispatch(loginFailure(error.message));
-      return Promise.reject(error);
-    }
   }
 );
 
 export const addUser = createAsyncThunk(
   'user/addUser',
-  async (credentials, { getState, dispatch }) => {
+  async (credentials, { getState, dispatch },thunkAPI) => {
     dispatch(loginRequest());
 
-    try {
-      const response = await fetch(process.env.REACT_APP_API_URL + '/api/users', {
+      await fetch(process.env.REACT_APP_API_URL + '/api/users', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(credentials),
       });
 
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      const data = await response.json();
-      dispatch(loginSuccess(data));
-      return data.user; // Return user data
-    } catch (error) {
-      dispatch(loginFailure(error.message));
-      return Promise.reject(error);
-    }
+  
+   
   }
 );
 
-export const logoutUser = createAsyncThunk(
-  'user/logout',
-  async () => {
-    const response = await fetch(process.env.REACT_APP_API_URL + '/api/logout');
-
-    if (!response.ok) {
-      console.error('Logout failed'); // Handle non-critical errors gracefully
-    }
-
-    return null; // Indicate successful logout
-  }
-);
+export {logout, refreshAccessTokenTest};
 
 export const refreshAccessToken = createAsyncThunk(
   'user/refreshAccessToken',
-  async (refreshToken, { getState, dispatch }) => {
-    const response = await fetch(process.env.REACT_APP_API_URL + '/api/token/refresh', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
-    });
+  async (test, { getState, dispatch }) => {
+    const state = getState();
+const { accessTokenExpiration, refreshToken } = state.rootReducer.user;
+const now = Date.now();
 
-    if (!response.ok) {
-      throw new Error('Refresh token failed');
-    }
+// Check if refresh is needed and not already in progress
+if (refreshToken !== null && now > accessTokenExpiration) {
+  console.log("api/token/refresh :", refreshToken);
 
+  let config = {
+    method: 'POST',
+    url: process.env.REACT_APP_API_URL + '/api/token/refresh',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ refreshToken })
+  };
+
+    const response = await fetch(config.url, config);
     const data = await response.json();
-    dispatch(loginSuccess(data)); // Update state with new tokens
-    return data.accessToken; // Return new access token
+      if (typeof data.code !== 'undefined') {
+        alert(data.message);
+        dispatch(loginFailure()); // Dispatch login failure on refresh error (optional)
+      } else {
+        dispatch(loginSuccess(data)); // Dispatch login success (optional)
+        
+      }
+    }
   }
 );
-const percistedUserReducer = persistReducer(persistConfig, userSlice.reducer); // Combine reducers
 
-export { percistedUserReducer};
+const userSlice = persistReducer(persistConfig, userSlice_init.reducer)
+
+export default userSlice;
+export {userSlice_init};
