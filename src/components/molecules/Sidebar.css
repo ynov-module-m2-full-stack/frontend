@@ -1,9 +1,6 @@
 /* src/components/Sidebar.css */
 .app-sidebar {
-    background-color: var(--background-color);
-    color: var(--sidebar-text-color); /* Use the sidebar-specific text color */
+  background-color: var(--sidebar-background-color);
+    color: var(--sidebar-text-color); 
   }
-  
-  /* .app-sidebar-section h2 {
-    color: var(--sidebar-text-color); /* Use the sidebar-specific text color */
   
