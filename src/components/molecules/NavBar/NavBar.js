@@ -3,7 +3,7 @@ import LoginModal from '../LoginModal/LoginModal.js';
 import InscriptionModal from '../InscriptionModal/InscriptionModal.js';
 import './NavBar.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../utilities/store.js';
+import { logout } from '../../../utilities/store.js';
 const NavBar = () => {
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
   const [inscriptionModalIsOpen, setInscriptionModalIsOpen] = useState(false);

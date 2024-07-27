@@ -1,6 +1,6 @@
 
 import React from 'react';
-import NavBar from './components/NavBar/NavBar';
+import NavBar from './components/molecules/NavBar/NavBar';
 import MyCalendar from './components/MyCalendar';
 import './App.css';
 import { ThemeProvider, useTheme } from './context/ThemeContext';

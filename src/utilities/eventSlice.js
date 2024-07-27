@@ -28,18 +28,6 @@ const initialState = {
       },
       setEventsPropertyOnMine: (state, action) => {
         state.showMyEvents = action.payload;
-      },
-      addEvent: (state, action) => {
-        const newEvent = {
-          id: Date.now(),
-          title: action.payload.name,
-          date: action.payload.startDate,
-        };
-        state.unshift(newEvent);
-      },
-      deleteEvent: (state, action) => {
-        state = state.filter((a) => a.id !== action.payload);
-        return state;
       }
     },
     extraReducers: (builder) => {
@@ -59,6 +47,12 @@ const initialState = {
         .addCase(fetchEvents.rejected, (state, action) => {
           state.loading = false;
           state.error = action.error.message;
+        }).addCase(addEvent.fulfilled, (state, action) => {
+          fetchEvents();
+        }).addCase(updateEvent.fulfilled, (state, action) => {
+          fetchEvents();
+        }).addCase(deleteEvent.fulfilled, (state, action) => {
+          fetchEvents();
         });
     },
   });
@@ -106,5 +100,85 @@ export const fetchEvents = createAsyncThunk(
     }
   }
 );
+export const addEvent = createAsyncThunk(
+  'events/addEvent',
+  async (eventData, { getState, dispatch }) => {
+    dispatch(refreshAccessToken()); // Assuming you have this function for token refresh
+    const state = getState();
+    const { accessToken } = state.rootReducer.user;
 
+    const config = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(eventData),
+    };
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events`, config);
+      const data = await response.json();
+      // Handle success, potentially dispatch an action to update events
+      return data;
+    } catch (error) {
+      // Handle error, potentially dispatch an error action
+      throw error;
+    }
+  }
+);
+
+export const updateEvent = createAsyncThunk(
+  'events/updateEvent',
+  async (eventData, { getState, dispatch }) => {
+    dispatch(refreshAccessToken());
+    const state = getState();
+    const { accessToken } = state.rootReducer.user;
+
+    const config = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(eventData),
+    };
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${eventData.id}`, config);
+      const data = await response.json();
+      // Handle success, potentially dispatch an action to update events
+      return data;
+    } catch (error) {
+      // Handle error, potentially dispatch an error action
+      throw error;
+    }
+  }
+);
+
+export const deleteEvent = createAsyncThunk(
+  'events/deleteEvent',
+  async (eventId, { getState, dispatch }) => {
+    dispatch(refreshAccessToken());
+    const state = getState();
+    const { accessToken } = state.rootReducer.user;
+
+    const config = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    };
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${eventId}`, config);
+      // Handle success, potentially dispatch an action to update events
+      return eventId;
+    } catch (error) {
+      // Handle error, potentially dispatch an error action
+      throw error;
+    }
+  }
+);
 export default eventSlice;

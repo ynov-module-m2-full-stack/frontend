@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { useDispatch, useSelector } from 'react-redux'
-import "./checkbox.css";
+import "./atoms/checkbox.css";
 import interactionPlugin from "@fullcalendar/interaction";
 import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../utilities/store';
 import Sidebar from './molecules/Sidebar';
+import EventModal from './molecules/EventModal/EventModal';
 const MyCalendar = () => {
   const events = useSelector((state) => state.rootReducer.events.events);
   const currentPage = useSelector((state) => state.rootReducer.events.currentPage);
@@ -15,15 +16,19 @@ const MyCalendar = () => {
   const maxPageSize = useSelector((state) => state.rootReducer.events.maxPageSize);
   const showMyEvents = useSelector((state) => state.rootReducer.events.showMyEvents);
   
+  const [EventModalIsOpen, setEventModalIsOpen] = useState(false);
+  const [typeEventModal, setTypeEventModal] = useState("post");
+  const [eventModalData, setEventModalData] = useState({});
+  const [deleteFlag, setDeleteFlag] = useState(false);
+  
   const accessToken = useSelector((state) => state.rootReducer.user.accessToken);
   
   const dispatch = useDispatch();
   const handlePageChange = (newPage) => {
-      if (currentPage > 1 && pageSize > maxPageSize) {
-        dispatch(setCurrentPage(newPage));
-        
-      } 
-    };
+    if (currentPage > 1 && pageSize > maxPageSize) {
+      dispatch(setCurrentPage(newPage));
+    } 
+  };
 
   const handleCheckboxChange = (event) => {
     dispatch(setEventsPropertyOnMine(event.target.checked));
@@ -34,18 +39,21 @@ const MyCalendar = () => {
     handlePageChange(1);
     dispatch(fetchEvents());
     
-  }, [accessToken]);
+  }, []);
+  // useEffect(() => {    
+  // }, [EventModalIsOpen]);
 
-  // useEffect(() => {
-  //   dispatch(fetchEvents()); // Fetch events on component mount
-  // }, [isLoggedIn]); // Re-fetch on page change
-  function handleEventRemove(events) {
-    console.log(events)
+  useEffect(() => {
+    dispatch(fetchEvents()); // Fetch events on component mount
+  }, [accessToken]); // Re-fetch on page change
+  
+  function preventDrag (e) {
+    e.revert();
   }
   function handleEventAdd(event) {
     console.log(event)
   }
-  function handleEventChange(events) {
+  function removeEvent(events) {
     console.log(events)
   }
   function handleDateSelect(selectInfo) {
@@ -64,6 +72,46 @@ const MyCalendar = () => {
       })
     }
   }
+  const eventDragStopped = (e) => {
+    console.log(e.jsEvent.target.id)
+    
+    switch (e.jsEvent.target.id ){
+      case "removeEventImg":
+        console.log(e.jsEvent.target.id)
+        e.event.remove();
+        break;
+      case "updateEventImg" :
+        setTypeEventModal("update");
+        console.log(e)
+        // e.view.calendar.unselect() 
+        setEventModalData(e.event);
+        setEventModalIsOpen(true);
+        break;
+    } 
+  };
+  window.addEventListener('DOMContentLoaded', function (){
+    setTimeout(() => {
+       setEventModalIsOpen(false);
+    }, 5000);
+  })
+  const openEventModal = (selectInfo) => {
+    let calendarApi = selectInfo.view.calendar
+
+    setTypeEventModal("post");
+    calendarApi.unselect() 
+    setEventModalIsOpen(true);
+  };
+  const handleEventChange = (e) => {
+    console.log(e);
+    // setTypeEventModal("update");
+    // console.log(e)
+    // e.view.calendar.unselect() 
+    // // setEventModalData(e);
+    // setEventModalIsOpen(true);
+  };
+  const closeEventModal = (event) => {
+    setEventModalIsOpen(false);
+  };
   return (
     <> 
       
@@ -88,18 +136,22 @@ const MyCalendar = () => {
               </label>
             </div>
             <br/>
+                <EventModal isOpen={EventModalIsOpen} onRequestClose={closeEventModal} type={typeEventModal} event={eventModalData} />
             <FullCalendar
               plugins={[dayGridPlugin, 
                 //timeGridPlugin, 
                 interactionPlugin]}
               initialView="dayGridMonth"
               events={events}
+              droppable={true}
               editable={true}
               selectable={true}
-              select={handleDateSelect}
+              eventDrop={preventDrag}
+              eventDragStop={eventDragStopped}
+              select={openEventModal}
               eventAdd={handleEventAdd}
               eventChange={handleEventChange}
-              eventRemove={handleEventRemove}
+              eventRemove={removeEvent}
               customButtons={{
                 prevPage: {
                   text: 'Précedante page',
