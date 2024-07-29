@@ -47,6 +47,18 @@ const initialState = {
         .addCase(fetchEvents.rejected, (state, action) => {
           state.loading = false;
           state.error = action.error.message;
+        })
+        .addCase(addEvent.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
+        })
+        .addCase(updateEvent.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
+        })
+        .addCase(deleteEvent.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
         }).addCase(addEvent.fulfilled, (state, action) => {
           fetchEvents();
         }).addCase(updateEvent.fulfilled, (state, action) => {
@@ -93,6 +105,7 @@ export const fetchEvents = createAsyncThunk(
       alert(data.message);
     } else {
       const events = data.map((event) => ({
+        id : event.id,
         title: event.name,
         date: formatDateToSql(new Date(event.startDate)),
       }));
@@ -148,7 +161,7 @@ export const updateEvent = createAsyncThunk(
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${eventData.id}`, config);
       const data = await response.json();
       // Handle success, potentially dispatch an action to update events
-      return data;
+      // return data;
     } catch (error) {
       // Handle error, potentially dispatch an error action
       throw error;
@@ -172,7 +185,7 @@ export const deleteEvent = createAsyncThunk(
     };
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${eventId}`, config);
+      await fetch(`${process.env.REACT_APP_API_URL}/api/events/${eventId}`, config);
       // Handle success, potentially dispatch an action to update events
       return eventId;
     } catch (error) {

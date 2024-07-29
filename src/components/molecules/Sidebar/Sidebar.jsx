@@ -1,4 +1,4 @@
-import SidebarEvent from "../atoms/SidebarEvent";
+import SidebarEvent from "../../atoms/SidebarEvent";
 import "./Sidebar.css";
 
 export default function Sidebar({ currentEvents }) {

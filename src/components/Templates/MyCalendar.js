@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { useDispatch, useSelector } from 'react-redux'
-import "./atoms/checkbox.css";
+import "../atoms/checkbox.css";
 import interactionPlugin from "@fullcalendar/interaction";
-import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../utilities/store';
-import Sidebar from './molecules/Sidebar';
-import EventModal from './molecules/EventModal/EventModal';
+import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../../utilities/store';
+import Sidebar from '../molecules/Sidebar/Sidebar';
+import EventModal from '../molecules/EventModal/EventModal';
+import { deleteEvent } from '../../utilities/eventSlice';
 const MyCalendar = () => {
   const events = useSelector((state) => state.rootReducer.events.events);
   const currentPage = useSelector((state) => state.rootReducer.events.currentPage);
@@ -77,23 +78,25 @@ const MyCalendar = () => {
     
     switch (e.jsEvent.target.id ){
       case "removeEventImg":
-        console.log(e.jsEvent.target.id)
-        e.event.remove();
+        console.log(e)
+        // e.event.remove();
+        dispatch(deleteEvent(e.event._def.publicId))
         break;
       case "updateEventImg" :
         setTypeEventModal("update");
         console.log(e)
         // e.view.calendar.unselect() 
+        const e1 = {...e.event, id : e.event._def.publicId}
         setEventModalData(e.event);
         setEventModalIsOpen(true);
         break;
     } 
   };
-  window.addEventListener('DOMContentLoaded', function (){
-    setTimeout(() => {
-       setEventModalIsOpen(false);
-    }, 5000);
-  })
+  // window.addEventListener('DOMContentLoaded', function (){
+  //   setTimeout(() => {
+  //      setEventModalIsOpen(false);
+  //   }, 5000);
+  // })
   const openEventModal = (selectInfo) => {
     let calendarApi = selectInfo.view.calendar
 

@@ -72,7 +72,7 @@ function InputTable(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent default form submission behavior
-
+    event.stopPropagation();
     const isValid =
       validateControl(startTimeRef) &&
       validateControl(endTimeRef) &&
@@ -107,6 +107,7 @@ function InputTable(props) {
       );
 
       const eventData = {
+        id: props.id,
         title,
         startDate: startDateTime, // Convert to Date object
         endDate: endDateTime, // Convert to Date object
@@ -118,18 +119,18 @@ function InputTable(props) {
         dispatch(updateEvent(eventData));
       }
       // Clear the form after successful submission (optional)
-      setStartTime("");
-      setEndTime("");
-      setStartDate("");
-      setEndDate("");
-      setTitle("");
+      // setStartTime("");
+      // setEndTime("");
+      // setStartDate("");
+      // setEndDate("");
+      // setTitle("");
     } else {
       console.error("Form submission failed due to invalid data");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
       <table style={{ border: "none", width: "100%" }}>
         <tbody>
           <tr>
@@ -204,8 +205,8 @@ function InputTable(props) {
           </tr>
         </tbody>
       </table>
-      <button type="submit">Submit</button>
-    </form>
+      <button onClick={handleSubmit}>Submit</button>
+    </>
   );
 }
 
