@@ -1,4 +1,75 @@
-# Getting Started with Create React App
+#React Calendar
+
+##Description
+
+Happy Event est une application web de calendrier interactif développée avec React. Elle permet aux utilisateurs de visualiser et de gérer leurs événements sur un calendrier intuitif et facile à utiliser.
+
+##Fonctionnalités
+
+Visualisation mensuelle : Affiche les jours du mois actuel avec la possibilité de naviguer entre les mois.
+Ajout d'événements : Permet aux utilisateurs d'ajouter des événements avec une date et une description.
+Édition et suppression : Les utilisateurs peuvent modifier ou supprimer les événements existants.
+Responsive : Adapté pour une utilisation sur des appareils de différentes tailles (mobile, tablette, desktop).
+
+##Installation
+
+Prérequis
+Node.js (version 12 ou supérieure)
+npm (version 6 ou supérieure) ou yarn
+
+##Étapes d'installation
+
+Cloner le dépôt
+bash
+Copier le code
+git clone https://github.com/ynov-module-m2-full-stack/frontend.git
+cd le projet
+
+##Installer les dépendances
+
+Utiliser npm :
+
+npm install
+
+ou yarn :
+
+yarn install
+
+##Lancer l'application
+
+Utiliser npm :
+
+npm start
+
+ou yarn :
+
+yarn start
+L'application sera accessible à l'adresse http://localhost:3000.
+
+Utilisation
+Ouvrez votre navigateur et allez à http://localhost:3000.
+Naviguez entre les mois à l'aide des flèches de navigation.
+Cliquez sur un jour pour ajouter un événement.
+Cliquez sur un événement existant pour le modifier ou le supprimer.
+
+Technologies utilisées
+React
+React-DOM
+React-Create-App
+CSS
+
+
+##Contribution
+
+Les contributions sont les bienvenues ! Pour contribuer, suivez ces étapes :
+
+Fork le projet
+Créez votre branche de fonctionnalité (git checkout -b feature/ma-fonctionnalité)
+Commitez vos changements (git commit -am 'Ajout d'une fonctionnalité')
+Pushez sur la branche (git push origin feature/ma-fonctionnalité)
+Ouvrez une Pull Request
+
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
