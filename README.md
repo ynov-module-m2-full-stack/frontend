@@ -140,3 +140,17 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+Le drag & drop est préviligié, pour des raisons de modernisation et manque d'espace, une autre méthode plus normalisé dans les site web, consiste à faire un composant personalisé de l'évènenemt, à titre d'exemple, faire comme ceci :
+`
+
+              eventContent={ (arg) => {
+    <i>
+      {console.log("test test")}
+      {arg.event.extendedProps.isUrgent ?
+        'urgent event' :
+        'normal event'}
+    </i>
+
+}}
+`

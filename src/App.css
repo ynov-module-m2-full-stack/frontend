@@ -10,6 +10,16 @@ body>div {
 h2 {
   margin: 0;
   font-size: 16px;
+  margin-bottom: 20px;
+}
+
+form #email {
+ position: relative;
+ left: 29px;
+}
+
+.log-button {
+  cursor: pointer;
 }
 
 ul {
@@ -37,12 +47,21 @@ b {
 .app-sidebar {
   width: 300px;
   line-height: 1.5;
-  background: #eaf9ff;
-  border-right: 1px solid #d3e2e8;
 }
 
 .app-sidebar-section {
   padding: 2em;
+}
+
+.theme-btn {
+  float: right !important;
+  float: right !important;
+  height: 2rem;
+  margin-top: 5px;
+  background-color: var(--toggle-background-color);
+  color: var(--toggle-text-color);
+  border-radius: 10px;
+  border: 1px solid #e6c068;
 }
 
 .app-main {

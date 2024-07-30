@@ -1,0 +1,6 @@
+/* src/components/Sidebar.css */
+.app-sidebar {
+  background-color: var(--sidebar-background-color);
+    color: var(--sidebar-text-color); 
+  }
+  

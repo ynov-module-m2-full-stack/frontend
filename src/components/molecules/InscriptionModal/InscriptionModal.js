@@ -2,8 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../utilities/userSlice';
-
+import { loginUser, addUser } from '../../../utilities/store';
 const customStyles = {
   content: {
     top: '50%',
@@ -37,7 +36,7 @@ const InscriptionModal = ({ isOpen, onRequestClose }) => {
     e.stopPropagation();
     try {
       await dispatch(addUser({ email, password }));
-      onRequestClose();
+      await dispatch(loginUser({ email, password }));
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -61,7 +60,7 @@ const InscriptionModal = ({ isOpen, onRequestClose }) => {
           <input type="password" id="password" name="password" value={password} required 
           onChange={(e)=>setPassword  (e.target.value)} />
         </div>
-        <button className="log-button" type="submit" style={{ marginBottom: '10px' }}>S'inscrire</button>
+        <button className="log-button" type="button" onClick={handleSubmit}  style={{ marginBottom: '10px' }}>S'inscrire</button>
       </form>
       <button className="close-button" onClick={onRequestClose}>Fermer</button>
     </Modal>

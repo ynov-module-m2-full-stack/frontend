@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import './LoginModal.css';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../utilities/userSlice';
+import { loginUser } from '../../../utilities/store';
 const customStyles = {
   content: {
     top: '50%',
