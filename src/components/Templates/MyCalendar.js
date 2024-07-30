@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import { useDispatch, useSelector } from 'react-redux'https://github.com/ynov-module-m2-full-stack/
+import { useDispatch, useSelector } from 'react-redux';//
 import interactionPlugin from "@fullcalendar/interaction";
-import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../utilities/store';
-import Sidebar from './molecules/Sidebar';
+
+import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../../utilities/store';
+import Sidebar from '../molecules/Sidebar/Sidebar';
+import EventModal from '../molecules/EventModal/EventModal';
+import { deleteEvent } from '../../utilities/eventSlice';import Modal from 'react-modal';
+
+import { FaHeart } from 'react-icons/fa';
+
 Modal.setAppElement('#root');
 
 const MyCalendar = () => {
@@ -16,46 +22,68 @@ const MyCalendar = () => {
   const maxPageSize = useSelector((state) => state.rootReducer.events.maxPageSize);
   const showMyEvents = useSelector((state) => state.rootReducer.events.showMyEvents);
   
+  
   const accessToken = useSelector((state) => state.rootReducer.user.accessToken);
-  const events = useSelector((state) => state.rootReducer.events.events);
-  const currentPage = useSelector((state) => state.rootReducer.events.currentPage);
-  const pageSize = useSelector((state) => state.rootReducer.events.pageSize);
-  const loading = useSelector((state) => state.rootReducer.events.loading);
-  const error = useSelector((state) => state.rootReducer.events.error);
-  const maxPageSize = useSelector((state) => state.rootReducer.events.maxPageSize);
-  const showMyEvents = useSelector((state) => state.rootReducer.events.showMyEvents);
-  const accessToken = useSelector((state) => state.rootReducer.user.accessToken);  // Assuming you have user id in the state
-
+  
+  const [EventModalIsOpen, setEventModalIsOpen] = useState(false);
+  const [typeEventModal, setTypeEventModal] = useState("post");
+  const [eventModalData, setEventModalData] = useState({});
+  const [deleteFlag, setDeleteFlag] = useState(false);
+  
   const dispatch = useDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedIdEvent, setSelectedIdEvent] = useState(null);
   const [registrations, setRegistrations] = useState({});
 
-  const handlePageChange = (newPage) => {
-    if (currentPage > 1 && pageSize > maxPageSize) {
-      dispatch(setCurrentPage(newPage));
-    }
+  const eventDragStopped = (e) => {
+    console.log(e.jsEvent.target.id)
+    
+    switch (e.jsEvent.target.id ){
+      case "removeEventImg":
+        console.log(e)
+        // e.event.remove();
+        dispatch(deleteEvent(e.event._def.publicId))
+        break;
+      case "updateEventImg" :
+        setTypeEventModal("update");
+        console.log(e)
+        // e.view.calendar.unselect() 
+        const e1 = {...e.event, id : e.event._def.publicId}
+        setEventModalData(e.event);
+        setEventModalIsOpen(true);
+        break;
+    } 
   };
-
+  
   const handleCheckboxChange = (event) => {
     dispatch(setEventsPropertyOnMine(event.target.checked));
   };
 
   useEffect(() => {
+    
     handlePageChange(1);
     dispatch(fetchEvents());
-  }, [dispatch]); 
+    
+  }, []);
+  // useEffect(() => {    
+  // }, [EventModalIsOpen]);
+
+  useEffect(() => {
+    dispatch(fetchEvents()); // Fetch events on component mount
+  }, [accessToken]); // Re-fetch on page change
+   
 
   const handleDateSelect = (selectInfo) => {
     setSelectedDate(selectInfo.startStr);
+    setSelectedIdEvent(selectInfo._def.publicId);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const dispatch = useDispatch();
   const handlePageChange = (newPage) => {
       if (currentPage > 1 && pageSize > maxPageSize) {
         dispatch(setCurrentPage(newPage));
@@ -63,49 +91,15 @@ const MyCalendar = () => {
       } 
     };
 
-  const handleCheckboxChange = (event) => {
-    dispatch(setEventsPropertyOnMine(event.target.checked));
-  };
-  
-  useEffect(() => {
-    
-    handlePageChange(1);
-    dispatch(fetchEvents());
-    
-  }, [accessToken]);
-
-  // useEffect(() => {
-  //   dispatch(fetchEvents()); // Fetch events on component mount
-  // }, [isLoggedIn]); // Re-fetch on page change
   function handleEventRemove(events) {
     console.log(events)
   }
   function handleEventAdd(event) {
     console.log(event)
   }
-  function handleEventChange(events) {
-    console.log(events)
-  }
-  function handleDateSelect(selectInfo) {
-    let title = prompt('Veuillez entrer le titre de l\'évènement')
-    let calendarApi = selectInfo.view.calendar
-
-    calendarApi.unselect() // clear date selection
-
-    if (title) {
-      calendarApi.addEvent({
-        id: new Date(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      })
-    }
-  }
-  
-  const handleRegistration = async (eventInfo) => {
+  const handleRegistration = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/invitations', { // Change to your backend URL
+      const response = await fetch(process.env.REACT_APP_API_URL + '/api/invitations', { // Change to your backend URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +107,7 @@ const MyCalendar = () => {
         },
         body: JSON.stringify({
           status: 'pending',
-          idEvent: eventInfo.id, // Assuming selectedDate represents the event ID
+          idEvent: selectedIdEvent, // Assuming selectedDate represents the event ID
         }),
       });
 
@@ -129,15 +123,37 @@ const MyCalendar = () => {
     } catch (error) {
       console.error('Error:', error);
     }
+    setSelectedIdEvent(0);
   };
 
+  function preventDrag (e) {
+    e.revert();
+  }
+  const openEventModal = (selectInfo) => {
+    let calendarApi = selectInfo.view.calendar
+
+    setTypeEventModal("post");
+    calendarApi.unselect() 
+    setEventModalIsOpen(true);
+  };
+  const handleEventChange = (e) => {
+    console.log(e);
+    // setTypeEventModal("update");
+    // console.log(e)
+    // e.view.calendar.unselect() 
+    // // setEventModalData(e);
+    // setEventModalIsOpen(true);
+  };
+  const closeEventModal = (event) => {
+    setEventModalIsOpen(false);
+  };
   const renderEventContent = (eventInfo) => {
     const isRegistered = registrations[eventInfo.event.startStr];
     return (
       <div>
         <FaHeart
           style={{ color: isRegistered ? 'red' : 'grey', cursor: 'pointer' }}
-          onClick={() => handleDateSelect(eventInfo)}
+          onClick={() => handleDateSelect(eventInfo.event)}
         />
         <b>{eventInfo.timeText}</b>
         <i>{eventInfo.event.title}</i>
@@ -173,18 +189,22 @@ const MyCalendar = () => {
               </label>
             </div>
             <br/>
+            <EventModal isOpen={EventModalIsOpen} onRequestClose={closeEventModal} type={typeEventModal} event={eventModalData} />
+            
             <FullCalendar
               plugins={[dayGridPlugin, 
                 //timeGridPlugin, 
                 interactionPlugin]}
               initialView="dayGridMonth"
               events={events}
+              droppable={true}
               editable={true}
               selectable={true}
-              select={handleDateSelect}
+              eventDrop={preventDrag}
+              eventDragStop={eventDragStopped}
+              select={openEventModal}
               eventAdd={handleEventAdd}
               eventChange={handleEventChange}
-              eventRemove={handleEventRemove}
               eventContent={renderEventContent}
               
               customButtons={{
