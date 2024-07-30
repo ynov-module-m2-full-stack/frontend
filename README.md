@@ -1,4 +1,4 @@
-![Logo du projet](public/assetsimages/LOGO.png)
+![Logo du projet](public/assets/LOGO.png)
 #React Calendar
 
 ##Description
