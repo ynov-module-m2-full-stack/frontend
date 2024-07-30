@@ -164,7 +164,7 @@ const MyCalendar = () => {
     <> 
       
       {loading && <p>Loading events...</p>}
-      {error && <p>Error fetching events: {error}</p>}
+      {error && <p>Bienvenue ! Veuillez vous connecter ou vous inscrire, pour pouvoir utiliser l'application Happy Event.</p>}
       {!loading && !error && 
       
         <div className="app">
