@@ -23,6 +23,7 @@ Cloner le dépôt
 bash
 Copier le code
 git clone https://github.com/ynov-module-m2-full-stack/frontend.git
+
 cd le projet
 
 ##Installer les dépendances
