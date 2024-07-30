@@ -85,7 +85,7 @@ export const loginUser = createAsyncThunk(
       const data = response.data;
       if (typeof(data.code) != 'undefined') {
         alert(data.message);
-        dispatch(loginFailure());
+        dispatch(loginFailure(data.message));
       }else{
         // console.log("data : "+data)
         dispatch(loginSuccess(data));

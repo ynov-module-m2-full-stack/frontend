@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import { useDispatch, useSelector } from 'react-redux';
-import { FaHeart } from 'react-icons/fa';
-import Modal from 'react-modal';
-import {
-  setCurrentPage,
-  setEventsPropertyOnMine,
-  fetchEvents,
-} from '../utilities/store';
+import { useDispatch, useSelector } from 'react-redux'https://github.com/ynov-module-m2-full-stack/
+import interactionPlugin from "@fullcalendar/interaction";
+import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../utilities/store';
 import Sidebar from './molecules/Sidebar';
-import './checkbox.css';
-
 Modal.setAppElement('#root');
 
 const MyCalendar = () => {
+  const events = useSelector((state) => state.rootReducer.events.events);
+  const currentPage = useSelector((state) => state.rootReducer.events.currentPage);
+  const pageSize = useSelector((state) => state.rootReducer.events.pageSize);
+  const loading = useSelector((state) => state.rootReducer.events.loading);
+  const error = useSelector((state) => state.rootReducer.events.error);
+  const maxPageSize = useSelector((state) => state.rootReducer.events.maxPageSize);
+  const showMyEvents = useSelector((state) => state.rootReducer.events.showMyEvents);
+  
+  const accessToken = useSelector((state) => state.rootReducer.user.accessToken);
   const events = useSelector((state) => state.rootReducer.events.events);
   const currentPage = useSelector((state) => state.rootReducer.events.currentPage);
   const pageSize = useSelector((state) => state.rootReducer.events.pageSize);
@@ -54,7 +55,54 @@ const MyCalendar = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  const dispatch = useDispatch();
+  const handlePageChange = (newPage) => {
+      if (currentPage > 1 && pageSize > maxPageSize) {
+        dispatch(setCurrentPage(newPage));
+        
+      } 
+    };
 
+  const handleCheckboxChange = (event) => {
+    dispatch(setEventsPropertyOnMine(event.target.checked));
+  };
+  
+  useEffect(() => {
+    
+    handlePageChange(1);
+    dispatch(fetchEvents());
+    
+  }, [accessToken]);
+
+  // useEffect(() => {
+  //   dispatch(fetchEvents()); // Fetch events on component mount
+  // }, [isLoggedIn]); // Re-fetch on page change
+  function handleEventRemove(events) {
+    console.log(events)
+  }
+  function handleEventAdd(event) {
+    console.log(event)
+  }
+  function handleEventChange(events) {
+    console.log(events)
+  }
+  function handleDateSelect(selectInfo) {
+    let title = prompt('Veuillez entrer le titre de l\'évènement')
+    let calendarApi = selectInfo.view.calendar
+
+    calendarApi.unselect() // clear date selection
+
+    if (title) {
+      calendarApi.addEvent({
+        id: new Date(),
+        title,
+        start: selectInfo.startStr,
+        end: selectInfo.endStr,
+        allDay: selectInfo.allDay
+      })
+    }
+  }
+  
   const handleRegistration = async (eventInfo) => {
     try {
       const response = await fetch('http://localhost:8000/api/invitations', { // Change to your backend URL
@@ -96,12 +144,13 @@ const MyCalendar = () => {
       </div>
     );
   };
-
   return (
     <> 
+      
       {loading && <p>Loading events...</p>}
       {error && <p>Error fetching events: {error}</p>}
       {!loading && !error && 
+      
         <div className="app">
           <Sidebar currentEvents={events} />
           <div className="app-main">
@@ -125,13 +174,19 @@ const MyCalendar = () => {
             </div>
             <br/>
             <FullCalendar
-              plugins={[dayGridPlugin, interactionPlugin]}
+              plugins={[dayGridPlugin, 
+                //timeGridPlugin, 
+                interactionPlugin]}
               initialView="dayGridMonth"
               events={events}
               editable={true}
               selectable={true}
               select={handleDateSelect}
+              eventAdd={handleEventAdd}
+              eventChange={handleEventChange}
+              eventRemove={handleEventRemove}
               eventContent={renderEventContent}
+              
               customButtons={{
                 prevPage: {
                   text: 'Précedante page',
@@ -144,9 +199,10 @@ const MyCalendar = () => {
                 nextPage: {
                   text: 'Page suivante',
                   click() {
+                    // Logic to handle next page based on total events and pageSize
                     handlePageChange(currentPage + 1);
                   },
-                },
+                }
               }}
               headerToolbar={{
                 left: 'prevPage,nextPage today',
@@ -154,6 +210,7 @@ const MyCalendar = () => {
                 right: 'prev,next',
               }}
             />
+            
           </div>
         </div>
       }

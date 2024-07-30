@@ -1,5 +1,5 @@
-import SidebarEvent from "../atoms/SidebarEvent";
-import './Sidebar.css';
+import SidebarEvent from "../../atoms/SidebarEvent";
+import "./Sidebar.css";
 
 export default function Sidebar({ currentEvents }) {
   return (
@@ -8,7 +8,10 @@ export default function Sidebar({ currentEvents }) {
         <h2>Instructions</h2>
         <ul>
           <li>Sélectionner une date pour pouvoir ajouter un évènement.</li>
-          <li>Pour pouvoir supprimer un évènement, cliquer sur ce dernier.</li>
+          <li>
+            Pour pouvoir modifier/supprimer un évènement, glisser le sur le
+            stylo/la poubelle, qui est juste en bas, ici ↓.
+          </li>
         </ul>
       </div>
 
@@ -20,6 +23,8 @@ export default function Sidebar({ currentEvents }) {
           ))}
         </ul>
       </div>
+      <img src="/assets/edit.png" id="updateEventImg" />
+      <img src="/assets/trash.png" id="removeEventImg" />
     </div>
   );
 }

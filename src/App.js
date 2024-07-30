@@ -1,7 +1,7 @@
 
 import React from 'react';
-import NavBar from './components/NavBar/NavBar';
-import MyCalendar from './components/MyCalendar';
+import NavBar from './components/molecules/NavBar/NavBar';
+import MyCalendar from './components/Templates/MyCalendar';
 import './App.css';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { Provider } from 'react-redux';
