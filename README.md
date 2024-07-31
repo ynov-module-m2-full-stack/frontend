@@ -4,7 +4,7 @@
 
 ##Description
 
-Happy Event est une application web de calendrier interactif développée avec React. Elle permet aux utilisateurs de visualiser et de gérer leurs événements sur un calendrier intuitif et facile à utiliser.
+Happy Events est une application web de calendrier interactif développée avec React. Elle permet aux utilisateurs de visualiser et de gérer leurs événements sur un calendrier intuitif et facile à utiliser.
 
 ##Fonctionnalités
 
