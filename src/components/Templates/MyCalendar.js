@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { useDispatch, useSelector } from 'react-redux';//
 import interactionPlugin from "@fullcalendar/interaction";
-
+import "../atoms/checkbox.css"
 import { setCurrentPage, setEventsPropertyOnMine, fetchEvents } from '../../utilities/store';
 import Sidebar from '../molecules/Sidebar/Sidebar';
 import EventModal from '../molecules/EventModal/EventModal';
