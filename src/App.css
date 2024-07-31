@@ -87,6 +87,10 @@ b {
   margin: auto;
 }
 
+.ReactModal__Overlay {
+  z-index: 1;
+}
+
 .fc .fc-header-toolbar h2{
   font-size: small; 
 }

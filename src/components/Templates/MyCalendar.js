@@ -239,10 +239,10 @@ const MyCalendar = () => {
         onRequestClose={closeModal}
         contentLabel="Confirm Registration"
       >
-        <h2>Confirm Registration</h2>
-        <p>Do you want to register for the event on {selectedDate}?</p>
-        <button onClick={handleRegistration}>Yes</button>
-        <button onClick={closeModal}>No</button>
+        <h2>Confirmer l'inscription</h2>
+        <p>Voulez-vous vous inscrire à cet évènement {selectedDate}?</p>
+        <button onClick={handleRegistration}>Oui</button>
+        <button onClick={closeModal}>Non</button>
       </Modal>
     </>
   );
